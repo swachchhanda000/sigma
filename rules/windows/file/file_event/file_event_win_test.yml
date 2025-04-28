@@ -1,0 +1,22 @@
+title: Mitre Invalid Tag Test
+id: de46df25-5039-4178-aa24-3ec72b75c04b
+status: experimental
+description: |
+    Mitre Invalid tag test
+references:
+    - Internal Research
+author: Swachchhanda Shrawan Poudel (Nextron Systems)
+date: 2025-04-28
+tags:
+    - attack.t1127.002
+    - attack.t1666
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename|endswith: 'test'
+    condition: selection
+falsepositives:
+    - Test
+level: high
