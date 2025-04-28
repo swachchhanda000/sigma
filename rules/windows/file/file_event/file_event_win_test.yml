@@ -8,7 +8,24 @@ references:
 author: Swachchhanda Shrawan Poudel (Nextron Systems)
 date: 2025-04-28
 tags:
+    - attack.t1027.014
+    - attack.t1036.010
+    - attack.t1059.011
+    - attack.t1070.010
+    - attack.t1071.005
+    - attack.t1098.007
     - attack.t1127.002
+    - attack.t1213.004
+    - attack.t1213.005
+    - attack.t1480.002
+    - attack.t1485.001
+    - attack.t1496.001
+    - attack.t1496.002
+    - attack.t1496.003
+    - attack.t1496.004
+    - attack.t1546.017
+    - attack.t1557.004
+    - attack.t1558.005
     - attack.t1666
 logsource:
     product: windows
