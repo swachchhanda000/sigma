@@ -54,8 +54,14 @@ jobs:
         tar xzf win7-x86.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win7_x86/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win7_x86/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -73,8 +79,14 @@ jobs:
         tar xzf win10-client.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Client/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Client/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -92,8 +104,14 @@ jobs:
         tar xzf win11-client.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -111,8 +129,14 @@ jobs:
         tar xzf win11-client-2023.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11_2023/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11_2023/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -130,8 +154,14 @@ jobs:
         tar xzf win2022-evtx.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-evtx/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-evtx/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
 
@@ -147,8 +177,14 @@ jobs:
         tar xzf win2022-ad.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Win2022-AD/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Win2022-AD/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
 
@@ -164,8 +200,14 @@ jobs:
         tar xzf win2022-0-20348-azure.tgz
     - name: Check for Sigma matches in baseline
       run: |
+        mkdir -p combined_rules/windows
+        mkdir -p combined_rules/rules-emerging-threats
+        mkdir -p combined_rules/rules-threat-hunting
+        cp -r rules/windows/* combined_rules/windows/
+        cp -r rules-emerging-threats/* combined_rules/rules-emerging-threats/
+        cp -r rules-threat-hunting/* combined_rules/rules-threat-hunting/
         chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-0-20348-azure/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-0-20348-azure/ --rule-path combined_rules/ > findings.json
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
