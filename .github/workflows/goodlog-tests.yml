@@ -48,7 +48,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path win7-x86/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win7-x86/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: |
@@ -94,7 +94,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path Logs_Client/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Client/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: |
@@ -140,7 +140,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path Logs_Win11/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: |
@@ -186,7 +186,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path Logs_Win11_2023/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11_2023/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: |
@@ -232,7 +232,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path win2022-evtx/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-evtx/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
@@ -276,7 +276,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path Win2022-AD/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Win2022-AD/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
@@ -320,7 +320,7 @@ jobs:
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
 
     - name: Check for Sigma matches in baseline
-      run: python tests/run_goodlog_check.py --evtx-path win2022-0-20348-azure/
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-0-20348-azure/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
 
     - name: Show findings excluding known FPs
       run: |
