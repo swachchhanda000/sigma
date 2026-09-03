@@ -89,7 +89,7 @@ jobs:
 
     - name: Run goodlog checks for ${{ matrix.name }}
       run: |
-        python tests/run_goodlog_tests.py \
+        python tests/run_goodlog_regression.py \
           --evtx-checker ./evtx-sigma-checker \
           --log-source tests/thor.yml \
           --evtx-path ${{ matrix.dir }}/ \
