@@ -1,11 +1,31 @@
-"""Validate goodlog findings against known false positives."""
+"""Run evtx-sigma-checker against baselines and validate against known false positives."""
 
 import argparse
 import csv
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
+
+
+def run_checker(
+    checker: str,
+    log_source: str,
+    evtx_paths: list[str],
+    rule_paths: list[str],
+    findings_path: str,
+) -> None:
+    cmd = [checker, "--log-source", log_source]
+    for p in evtx_paths:
+        cmd += ["--evtx-path", p]
+    for p in rule_paths:
+        cmd += ["--rule-path", p]
+    with open(findings_path, "w") as f:
+        result = subprocess.run(cmd, stdout=f)
+    if result.returncode != 0:
+        print(f"ERROR: evtx-sigma-checker exited with code {result.returncode}")
+        sys.exit(result.returncode)
 
 
 def build_rule_index(rule_dirs: list[str], deprecated_dirs: list[str]) -> tuple[dict, set]:
@@ -90,7 +110,7 @@ def filter_findings(findings_path: str, valid_fps: list[tuple[str, str]]) -> lis
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--findings", required=True, help="Path to findings JSON file")
+    parser.add_argument("--findings", default="findings.json", help="Path to findings JSON file")
     parser.add_argument("--known-fps", required=True, help="Path to known-FPs.csv")
     parser.add_argument(
         "--rule-paths",
@@ -98,11 +118,24 @@ def parse_args() -> argparse.Namespace:
         default=["rules/windows/", "rules-emerging-threats/", "rules-threat-hunting/"],
     )
     parser.add_argument("--deprecated-paths", nargs="+", default=["deprecated/"])
+    parser.add_argument("--evtx-checker", help="Path to evtx-sigma-checker binary")
+    parser.add_argument("--log-source", help="Path to log source config (e.g. tests/thor.yml)")
+    parser.add_argument("--evtx-path", nargs="+", dest="evtx_paths", help="EVTX directories to scan")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+
+    if not Path(args.findings).exists():
+        if not args.evtx_checker:
+            print(f"ERROR: {args.findings} not found and --evtx-checker not provided")
+            return 1
+        print("Running evtx-sigma-checker...")
+        run_checker(args.evtx_checker, args.log_source, args.evtx_paths, args.rule_paths, args.findings)
+        print("Done.\n")
+    else:
+        print(f"Using cached findings from {args.findings}\n")
 
     print("Building rule index...")
     rule_index, deprecated = build_rule_index(args.rule_paths, args.deprecated_paths)
