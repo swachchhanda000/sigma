@@ -13,21 +13,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 7 32-bit baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: win7-x86/
+        key: baseline-win7-x86-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download and extract Windows 7 32-bit baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win7-x86.tgz
         tar xzf win7-x86.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find win7-x86/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in win7-x86/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win7-x86/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win7-x86/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -37,21 +59,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 10 baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Logs_Client/
+        key: baseline-win10-client-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download and extract Windows 10 baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win10-client.tgz
         tar xzf win10-client.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find Logs_Client/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in Logs_Client/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Client/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Client/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -61,21 +105,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 11 baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Logs_Win11/
+        key: baseline-win11-client-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download and extract Windows 11 baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win11-client.tgz
         tar xzf win11-client.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find Logs_Win11/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in Logs_Win11/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -85,21 +151,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
-    - name: Download and extract Windows 11 baseline
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 11 2023 baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Logs_Win11_2023/
+        key: baseline-win11-client-2023-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 11 2023 baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win11-client-2023.tgz
         tar xzf win11-client-2023.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find Logs_Win11_2023/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in Logs_Win11_2023/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11_2023/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Logs_Win11_2023/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
@@ -109,21 +197,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 2022 baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: win2022-evtx/
+        key: baseline-win2022-evtx-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download and extract Windows 2022 baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win2022-evtx.tgz
         tar xzf win2022-evtx.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find win2022-evtx/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in win2022-evtx/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-evtx/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-evtx/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
 
@@ -131,21 +241,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
-    - name: Download and extract Windows 2022 baseline
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 2022 domain controller baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Win2022-AD/
+        key: baseline-win2022-ad-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 2022 domain controller baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win2022-ad.tgz
         tar xzf win2022-ad.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find Win2022-AD/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in Win2022-AD/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Win2022-AD/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path Win2022-AD/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
 
@@ -153,21 +285,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
+
+    - name: Cache evtx-sigma-checker
+      id: cache-evtx-checker
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: evtx-sigma-checker
+        key: evtx-sigma-checker-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download evtx-sigma-checker
+      if: steps.cache-evtx-checker.outputs.cache-hit != 'true'
       run: wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/evtx-sigma-checker
+
+    - name: Set evtx-sigma-checker permissions
+      run: chmod +x evtx-sigma-checker
+
+    - name: Cache Windows 2022 Azure baseline
+      id: cache-baseline
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: win2022-0-20348-azure/
+        key: baseline-win2022-0-20348-azure-${{ env.EVTX_BASELINE_VERSION }}
+
     - name: Download and extract Windows 2022.0.20348 Azure baseline
+      if: steps.cache-baseline.outputs.cache-hit != 'true'
       run: |
         wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win2022-0-20348-azure.tgz
         tar xzf win2022-0-20348-azure.tgz
+
     - name: Verify baseline contains EVTX files
       run: |
         count=$(find win2022-0-20348-azure/ -name '*.evtx' | wc -l)
         echo "Found ${count} .evtx file(s) in win2022-0-20348-azure/"
         [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+
     - name: Check for Sigma matches in baseline
-      run: |
-        chmod +x evtx-sigma-checker
-        ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-0-20348-azure/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path win2022-0-20348-azure/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+
     - name: Show findings excluding known FPs
       run: |
         chmod +x .github/workflows/matchgrep.sh
