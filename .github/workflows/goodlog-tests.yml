@@ -50,6 +50,9 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Install Python dependencies
+      run: pip install pyyaml
+
     - name: Cache evtx-sigma-checker
       id: cache-evtx-checker
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0

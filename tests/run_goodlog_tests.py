@@ -1,4 +1,5 @@
-"""Run evtx-sigma-checker against baselines and validate against known false positives."""
+"""Run evtx-sigma-checker against baselines and validate against known false positives.
+"""
 
 import argparse
 import csv
@@ -7,6 +8,8 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
+import yaml
 
 
 def run_checker(
@@ -24,8 +27,7 @@ def run_checker(
     with open(findings_path, "w") as f:
         result = subprocess.run(cmd, stdout=f)
     if result.returncode != 0:
-        print(f"ERROR: evtx-sigma-checker exited with code {result.returncode}")
-        sys.exit(result.returncode)
+        raise RuntimeError(f"evtx-sigma-checker exited with code {result.returncode}")
 
 
 def build_rule_index(rule_dirs: list[str], deprecated_dirs: list[str]) -> tuple[dict, set]:
@@ -35,21 +37,18 @@ def build_rule_index(rule_dirs: list[str], deprecated_dirs: list[str]) -> tuple[
     for d in rule_dirs:
         for path in Path(d).rglob("*.yml"):
             try:
-                content = path.read_text(encoding="utf-8")
-                id_m = re.search(r"^id:\s+(\S+)", content, re.MULTILINE)
-                title_m = re.search(r"^title:\s+(.+)", content, re.MULTILINE)
-                if id_m:
-                    rules[id_m.group(1)] = (str(path), title_m.group(1).strip() if title_m else "")
+                data = yaml.safe_load(path.read_text(encoding="utf-8"))
+                if isinstance(data, dict) and "id" in data:
+                    rules[data["id"]] = (str(path), data.get("title", ""))
             except Exception:
                 pass
 
     for d in deprecated_dirs:
         for path in Path(d).rglob("*.yml"):
             try:
-                content = path.read_text(encoding="utf-8")
-                id_m = re.search(r"^id:\s+(\S+)", content, re.MULTILINE)
-                if id_m:
-                    deprecated.add(id_m.group(1))
+                data = yaml.safe_load(path.read_text(encoding="utf-8"))
+                if isinstance(data, dict) and "id" in data:
+                    deprecated.add(data["id"])
             except Exception:
                 pass
 
