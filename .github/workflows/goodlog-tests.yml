@@ -8,41 +8,14 @@ env:
 jobs:
   check-baseline:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Windows 7 32-bit
-            tgz: win7-x86.tgz
-            dir: win7-x86
-            cache_key: baseline-win7-x86
-          - name: Windows 10
-            tgz: win10-client.tgz
-            dir: Logs_Client
-            cache_key: baseline-win10-client
-          - name: Windows 11
-            tgz: win11-client.tgz
-            dir: Logs_Win11
-            cache_key: baseline-win11-client
-          - name: Windows 11 2023
-            tgz: win11-client-2023.tgz
-            dir: Logs_Win11_2023
-            cache_key: baseline-win11-client-2023
-          - name: Windows 2022
-            tgz: win2022-evtx.tgz
-            dir: win2022-evtx
-            cache_key: baseline-win2022-evtx
-          - name: Windows 2022 Domain Controller
-            tgz: win2022-ad.tgz
-            dir: Win2022-AD
-            cache_key: baseline-win2022-ad
-          - name: Windows 2022 Azure
-            tgz: win2022-0-20348-azure.tgz
-            dir: win2022-0-20348-azure
-            cache_key: baseline-win2022-0-20348-azure
 
     steps:
     - uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
 
     - name: Cache evtx-sigma-checker
       id: cache-evtx-checker
@@ -58,29 +31,112 @@ jobs:
     - name: Set evtx-sigma-checker permissions
       run: chmod +x evtx-sigma-checker
 
-    - name: Cache ${{ matrix.name }} baseline
-      id: cache-baseline
+    - name: Cache Windows 7 32-bit baseline
+      id: cache-win7-x86
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
       with:
-        path: ${{ matrix.dir }}/
-        key: ${{ matrix.cache_key }}-${{ env.EVTX_BASELINE_VERSION }}
+        path: win7-x86/
+        key: baseline-win7-x86-${{ env.EVTX_BASELINE_VERSION }}
 
-    - name: Download and extract ${{ matrix.name }} baseline
-      if: steps.cache-baseline.outputs.cache-hit != 'true'
+    - name: Download and extract Windows 7 32-bit baseline
+      if: steps.cache-win7-x86.outputs.cache-hit != 'true'
       run: |
-        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/${{ matrix.tgz }}
-        tar xzf ${{ matrix.tgz }}
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win7-x86.tgz
+        tar xzf win7-x86.tgz
 
-    - name: Verify baseline contains EVTX files
+    - name: Cache Windows 10 baseline
+      id: cache-win10-client
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Logs_Client/
+        key: baseline-win10-client-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 10 baseline
+      if: steps.cache-win10-client.outputs.cache-hit != 'true'
       run: |
-        count=$(find ${{ matrix.dir }}/ -name '*.evtx' | wc -l)
-        echo "Found ${count} .evtx file(s) in ${{ matrix.dir }}/"
-        [ "${count}" -gt 0 ] || { echo "ERROR: No .evtx files found"; exit 1; }
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win10-client.tgz
+        tar xzf win10-client.tgz
 
-    - name: Check for Sigma matches in baseline
-      run: ./evtx-sigma-checker --log-source tests/thor.yml --evtx-path ${{ matrix.dir }}/ --rule-path rules/windows/ --rule-path rules-emerging-threats/ --rule-path rules-threat-hunting/ > findings.json
+    - name: Cache Windows 11 baseline
+      id: cache-win11-client
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Logs_Win11/
+        key: baseline-win11-client-${{ env.EVTX_BASELINE_VERSION }}
 
-    - name: Show findings excluding known FPs
+    - name: Download and extract Windows 11 baseline
+      if: steps.cache-win11-client.outputs.cache-hit != 'true'
       run: |
-        chmod +x .github/workflows/matchgrep.sh
-        ./.github/workflows/matchgrep.sh findings.json .github/workflows/known-FPs.csv
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win11-client.tgz
+        tar xzf win11-client.tgz
+
+    - name: Cache Windows 11 2023 baseline
+      id: cache-win11-client-2023
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Logs_Win11_2023/
+        key: baseline-win11-client-2023-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 11 2023 baseline
+      if: steps.cache-win11-client-2023.outputs.cache-hit != 'true'
+      run: |
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win11-client-2023.tgz
+        tar xzf win11-client-2023.tgz
+
+    - name: Cache Windows 2022 baseline
+      id: cache-win2022-evtx
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: win2022-evtx/
+        key: baseline-win2022-evtx-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 2022 baseline
+      if: steps.cache-win2022-evtx.outputs.cache-hit != 'true'
+      run: |
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win2022-evtx.tgz
+        tar xzf win2022-evtx.tgz
+
+    - name: Cache Windows 2022 Domain Controller baseline
+      id: cache-win2022-ad
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: Win2022-AD/
+        key: baseline-win2022-ad-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 2022 Domain Controller baseline
+      if: steps.cache-win2022-ad.outputs.cache-hit != 'true'
+      run: |
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win2022-ad.tgz
+        tar xzf win2022-ad.tgz
+
+    - name: Cache Windows 2022 Azure baseline
+      id: cache-win2022-azure
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: win2022-0-20348-azure/
+        key: baseline-win2022-0-20348-azure-${{ env.EVTX_BASELINE_VERSION }}
+
+    - name: Download and extract Windows 2022 Azure baseline
+      if: steps.cache-win2022-azure.outputs.cache-hit != 'true'
+      run: |
+        wget --no-verbose https://github.com/NextronSystems/evtx-baseline/releases/download/$EVTX_BASELINE_VERSION/win2022-0-20348-azure.tgz
+        tar xzf win2022-0-20348-azure.tgz
+
+    - name: Check for Sigma matches in baselines
+      run: |
+        ./evtx-sigma-checker \
+          --log-source tests/thor.yml \
+          --evtx-path win7-x86/ \
+          --evtx-path Logs_Client/ \
+          --evtx-path Logs_Win11/ \
+          --evtx-path Logs_Win11_2023/ \
+          --evtx-path win2022-evtx/ \
+          --evtx-path Win2022-AD/ \
+          --evtx-path win2022-0-20348-azure/ \
+          --rule-path rules/windows/ \
+          --rule-path rules-emerging-threats/ \
+          --rule-path rules-threat-hunting/ \
+          > findings.json
+
+    - name: Validate findings against known FPs
+      run: python tests/run_goodlog_tests.py --findings findings.json --known-fps .github/workflows/known-FPs.csv
